@@ -26,8 +26,12 @@ class CedulaChecker:
         # Verificamos cual es el tipo de patron correspondiente 
         for prefix_regex, tag in patterns.items():
             if re.match(prefix_regex, prefix):
-                if tag in ['Regular', 'Panameno_Vigencia', 'Indigena']:
+                if tag == 'Regular':
                     prefix_required_len = 2
+                    book_required_len = 4
+                    volume_required_len = 5
+                elif tag in ['Panameno_Vigencia', 'Indigena']:
+                    prefix_required_len = 4
                     book_required_len = 4
                     volume_required_len = 5
                 elif tag in ['Extranjero', 'Naturalizado']:
@@ -39,6 +43,19 @@ class CedulaChecker:
                     book_required_len = 4
                     volume_required_len = 6
                 break  # Salir del bucle al encontrar una coincidencia
+            
+        provinces = self.province_dict()
+        province = ''
+        for number, prov in provinces.items():
+            
+            prefix_numbers = ''.join([character for character in prefix if character.isdigit()])
+            
+            if prefix_numbers == '':
+                break
+            
+            if int(prefix_numbers) == number:
+                province = prov
+                break
         
         #cedula_len = len(self.cedula) - 2 # si el formato es correcto dos caracteres que son guion no se cuentan
         
@@ -60,7 +77,7 @@ class CedulaChecker:
         # book_len = len(self.cedula_splitted[1])
         # volume_len = len(self.cedula_splitted[2])
         
-        return prefix_required_len, book_required_len, volume_required_len
+        return prefix_required_len, book_required_len, volume_required_len, province
         
         # return total_characters, prefix_required_len, book_required_len, volume_required_len
         
@@ -78,7 +95,7 @@ class CedulaChecker:
         
         # # print(f"Hola, la cedula es {cedula_parts}.")
         
-    def format(self, prefix_required_len, book_required_len, volume_required_len):
+    def format(self, prefix_required_len, book_required_len, volume_required_len, province):
         
         elements_required_len = [prefix_required_len, book_required_len, volume_required_len]
         
@@ -105,6 +122,7 @@ class CedulaChecker:
             
         print(formatted_cedula)
         print(len(formatted_cedula))
+        print(province)
         
     def pattern_dict(self):
         regex_dict = {
@@ -116,5 +134,23 @@ class CedulaChecker:
             r'^(1[0-3]|[1-9])PI$': 'Indigena',
         }
         return regex_dict
+    
+    def province_dict(self):
+        province_dict = {
+            1: "Bocas del Toro",
+            2: "Coclé",
+            3: "Colón",
+            4: "Chiriquí",
+            5: "Darién",
+            6: "Herrera",
+            7: "Los Santos",
+            8: "Panamá",
+            9: "Veraguas",
+            10: "Guna Yala",
+            11: "Emberá Wounaan",
+            12: "Ngäbe-Buglé",
+            13: "Panamá Oeste"
+        }
+        return province_dict
         
         

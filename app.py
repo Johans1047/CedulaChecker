@@ -13,11 +13,11 @@ def index():
         checker = CedulaChecker(cedula)
         
         try:
-            prefix_required_len, book_required_len, volume_required_len = checker.validate()
+            prefix_required_len, book_required_len, volume_required_len, province = checker.validate()
         except InvalidFormat as e:
             print(e)
             
-        checker.format(prefix_required_len, book_required_len, volume_required_len)
+        checker.format(prefix_required_len, book_required_len, volume_required_len, province)
     
     # Imprimir el valor en la consola
     # print(f"Valor recibido: {}")
