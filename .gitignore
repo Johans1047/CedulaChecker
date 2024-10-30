@@ -1,0 +1,59 @@
+# Entorno virtual
+venv/
+env/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Archivos de configuración
+*.env
+config.py
+instance/config.py
+
+# Base de datos local
+*.db
+*.sqlite3
+
+# Logs y archivos temporales
+*.log
+*.pot
+*.pid
+*.seed
+*.backup
+tmp/
+*.tmp
+*.temp
+cache/
+*.log
+
+# Archivos de compilación de Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.so
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Archivos creados por Flask y Python
+.mypy_cache/
+.pytest_cache/
+.coverage
+.tox/
+.pipfile
+.pipfile.lock
+
+# Node.js (si se usa para frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# Archivos de Docker (si estás usando Docker)
+docker-compose.override.yml
+.dockerignore
