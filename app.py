@@ -1,16 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for
 from cedula import CedulaChecker
+from errors import InvalidFormat
 #import sqlite3
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Obtener el valor del input por su nombre en el formulario (request.form es un diccionario de valores)
-    valor = request.form.get('cedula-value')
-
-    checker = CedulaChecker(valor)
-    checker.validate()
+    # Obtener el valor del input por su nombre en el formulario (request.form es un diccionario de valores) en el metodo POST
+    if request.method == 'POST':
+        cedula = request.form.get('cedula-value')
+        checker = CedulaChecker(cedula)
+        
+        try:
+            prefix_required_len, book_required_len, volume_required_len = checker.validate()
+        except InvalidFormat as e:
+            print(e)
+            
+        checker.format(prefix_required_len, book_required_len, volume_required_len)
     
     # Imprimir el valor en la consola
     # print(f"Valor recibido: {}")
