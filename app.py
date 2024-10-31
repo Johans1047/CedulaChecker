@@ -28,7 +28,7 @@ def index():
             ced_type, province = checker.validate()
         except InvalidFormat as e:
             print(e)
-            return render_template('index.html', alerta='error')
+            return render_template('index.html', alert='error')
         
         formatted_cedula, prefix, book, volume = checker.format()
         
@@ -43,7 +43,7 @@ def index():
             'tomo': volume
         }
             
-        return render_template('index.html', resultado=resultado, alerta='exito')
+        return render_template('index.html', resultado=resultado, alert='success')
     
     return render_template('index.html')
 

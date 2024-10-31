@@ -11,9 +11,9 @@
         <div class="bg-white p-8 rounded-lg shadow-md mb-8">
             <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Validador de Cédula Panameña</h1>
 
-            {% if alerta %}
-            <div id="toast" class="fixed top-5 right-5 {% if alerta == 'error' %}bg-red-500{% elif alerta == 'exito' %}bg-green-500{% endif %} text-white text-sm px-3 py-3 rounded shadow-lg">
-                {% if alerta == 'error' %}El patrón de cédula que ha colocado no es aceptado.{% elif alerta == 'exito' %}Ha verificado su cédula con éxito!{% endif %}
+            {% if alert %}
+            <div id="toast" class="fixed top-5 right-5 {% if alert == 'error' %}bg-red-500{% elif alert == 'success' %}bg-green-500{% endif %} text-white text-sm px-3 py-3 rounded shadow-lg">
+                {% if alert == 'error' %}El patrón de cédula que ha colocado no es aceptado.{% elif alert == 'success' %}Ha verificado su cédula con éxito!{% endif %}
             </div>
             {% endif %}
             
@@ -72,13 +72,22 @@
     </div>
 </body>
 <script>
-    function hideToast() {
-        const toast = document.getElementById("toast");
+    let toast = null;
 
-        // Ocultar el toast después de 5 segundos
-        setTimeout(() => {
-            toast.classList.add("hidden");
-        }, 5000);
+    try {
+        toast = document.getElementById("toast");
+    } catch (error) {
+        console.error("Ocurrió un error:", error.message);
+    }
+
+    function hideToast() {
+        if (toast) {
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 5000);
+        } else {
+            console.warn("El elemento 'toast' no existe en el DOM.");
+        }
     }
 
     hideToast();
