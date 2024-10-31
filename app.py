@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, url_for
 from cedula import CedulaChecker
 from errors import InvalidFormat
-#import sqlite3
 
 app = Flask(__name__)
 
@@ -13,26 +12,25 @@ def index():
         checker = CedulaChecker(cedula)
         
         try:
-            prefix_required_len, book_required_len, volume_required_len, province = checker.validate()
+            ced_type, province = checker.validate()
         except InvalidFormat as e:
             print(e)
+            return render_template('index.html', alerta='error')
+        
+        formatted_cedula, prefix, book, volume = checker.format()
+        
+        resultado = {
+            'patron': cedula,
+            'cedula': formatted_cedula,
+            'tipo': ced_type,
+            'provincia': province,
+            'longitud': len(formatted_cedula),
+            'prefijo': prefix,
+            'libro': book,
+            'tomo': volume
+        }
             
-        checker.format(prefix_required_len, book_required_len, volume_required_len, province)
-    
-    # Imprimir el valor en la consola
-    # print(f"Valor recibido: {}")
-    # # if request.method == 'POST':
-        # Captura los datos del formulario
-        # name = request.form['name']
-        # email = request.form['email']
-        
-        # Guarda los datos en la base de datos
-        # with sqlite3.connect(DATABASE) as conn:
-        #     cursor = conn.cursor()
-        #     cursor.execute('INSERT INTO users (name, email) VALUES (?, ?)', (name, email))
-        #     conn.commit()
-        
-        # return redirect(url_for('index'))
+        return render_template('index.html', resultado=resultado, alerta='exito')
     
     # Muestra el formulario
     return render_template('index.html')

@@ -5,7 +5,10 @@ class CedulaChecker:
     def __init__(self, cedula):
         self.cedula = cedula
         self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}-\d{1,6}$'
-        self.cedula_splitted = cedula.split("-")
+        self.cedula_splitted = None
+        self.prefix_required_len = None
+        self.book_required_len = None
+        self.volume_required_len = None
 
     def validate(self):
         
@@ -13,35 +16,36 @@ class CedulaChecker:
         if not re.match(self.pattern, self.cedula):
             raise InvalidFormat()
         
+        # Como el formato es valido guardamos las distintas partes de la cedula
+        self.cedula_splitted = self.cedula.split("-")
+        
         prefix = self.cedula_splitted[0]
         patterns = self.pattern_dict()
         
-        # SI SON LOS TAGS ['Regular', 'Panameno_Vigencia', 'Indigena'] hacer un province DICT
-        
         # Inicializamos los requerimientos de longitud por defecto
-        prefix_required_len = 0
-        book_required_len = 0
-        volume_required_len = 0
+        self.prefix_required_len = 0
+        self.book_required_len = 0
+        self.volume_required_len = 0
         
         # Verificamos cual es el tipo de patron correspondiente 
         for prefix_regex, tag in patterns.items():
             if re.match(prefix_regex, prefix):
                 if tag == 'Regular':
-                    prefix_required_len = 2
-                    book_required_len = 4
-                    volume_required_len = 5
+                    self.prefix_required_len = 2
+                    self.book_required_len = 4
+                    self.volume_required_len = 5
                 elif tag in ['Panameno_Vigencia', 'Indigena']:
-                    prefix_required_len = 4
-                    book_required_len = 4
-                    volume_required_len = 5
+                    self.prefix_required_len = 4
+                    self.book_required_len = 4
+                    self.volume_required_len = 5
                 elif tag in ['Extranjero', 'Naturalizado']:
-                    prefix_required_len = 1
-                    book_required_len = 4
-                    volume_required_len = 5
+                    self.prefix_required_len = 1
+                    self.book_required_len = 4
+                    self.volume_required_len = 5
                 elif tag == 'Panameno_Extranjero':
-                    prefix_required_len = 2
-                    book_required_len = 4
-                    volume_required_len = 6
+                    self.prefix_required_len = 2
+                    self.book_required_len = 4
+                    self.volume_required_len = 6
                 break  # Salir del bucle al encontrar una coincidencia
             
         provinces = self.province_dict()
@@ -57,47 +61,11 @@ class CedulaChecker:
                 province = prov
                 break
         
-        #cedula_len = len(self.cedula) - 2 # si el formato es correcto dos caracteres que son guion no se cuentan
+        return tag, province
         
-        # cedula_parts = self.cedula.split("-")
+    def format(self):
         
-        # Obtenemos el total de caracteres para poder completar con la cantidad de 0s requerida
-        # total_characters = 0
-        # for i, part in enumerate(cedula_parts):
-        #     print(i)
-        #     part_len = len(part)
-        #     total_characters = total_characters + part_len
-               
-        # print(total_characters)
-        
-        #total_characters = len(self.cedula) - 2 # si el formato es correcto dos caracteres que son guion no se cuentan
-        
-        
-        # prefix_len = len(self.cedula_splitted[0])
-        # book_len = len(self.cedula_splitted[1])
-        # volume_len = len(self.cedula_splitted[2])
-        
-        return prefix_required_len, book_required_len, volume_required_len, province
-        
-        # return total_characters, prefix_required_len, book_required_len, volume_required_len
-        
-        # print(cedula_len, initial_prefix, volume)
-        
-        # total_characters = initial_prefix + book + volume
-        
-        # for i in range(14 - total_characters):
-        #     self.cedula = self.cedula + '0'
-        
-        # print(self.cedula)
-        
-        # for part in cedula_parts:
-        #     print(len(part))
-        
-        # # print(f"Hola, la cedula es {cedula_parts}.")
-        
-    def format(self, prefix_required_len, book_required_len, volume_required_len, province):
-        
-        elements_required_len = [prefix_required_len, book_required_len, volume_required_len]
+        elements_required_len = [self.prefix_required_len, self.book_required_len, self.volume_required_len]
         
         for i in range(len(self.cedula_splitted)):
             part = self.cedula_splitted[i]
@@ -108,21 +76,13 @@ class CedulaChecker:
             
             self.cedula_splitted[i] = '0' * (required_len - len(part)) + part
         
-        # book = self.cedula_splitted[1]
-        # print(book)
-        # if book_len != 4:
-        #     self.cedula_splitted[1] = '0' * (4 - book_len) + self.cedula_splitted[1] # que la cadena 0 se concatene las veces necesarias
-        #     print(self.cedula_splitted[1])
-        
         formatted_cedula = ''
         for part in self.cedula_splitted:
             formatted_cedula = formatted_cedula + part
             
         formatted_cedula = formatted_cedula + '0' * (14 - len(formatted_cedula))
             
-        print(formatted_cedula)
-        print(len(formatted_cedula))
-        print(province)
+        return formatted_cedula, self.cedula_splitted[0], self.cedula_splitted[1], self.cedula_splitted[2]
         
     def pattern_dict(self):
         regex_dict = {
