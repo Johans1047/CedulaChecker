@@ -6,7 +6,20 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Obtener el valor del input por su nombre en el formulario (request.form es un diccionario de valores) en el metodo POST
+    """Handles GET and POST requests for the main page.
+    
+    POST:
+        Validates and formats the entered cedula, then renders the result.
+    
+    GET:
+        Renders the main form page.
+    
+    Returns
+    -------
+    str
+        Rendered HTML page with results if POST, or just the form if GET.
+    """
+    
     if request.method == 'POST':
         cedula = request.form.get('cedula-value')
         checker = CedulaChecker(cedula)
@@ -32,9 +45,7 @@ def index():
             
         return render_template('index.html', resultado=resultado, alerta='exito')
     
-    # Muestra el formulario
     return render_template('index.html')
 
 if __name__ == '__main__':
-    # init_db()
     app.run(debug=True)

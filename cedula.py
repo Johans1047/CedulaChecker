@@ -10,24 +10,36 @@ class CedulaChecker:
         self.book_required_len = None
         self.volume_required_len = None
 
-    def validate(self):
+    def validate(self) -> tuple[str, str]:
+        """Validates the cedula format and returns its type and province.
         
-        # Validamos que se cumpla el formato requerido
+        Returns
+        -------
+        tuple[str, str]
+            The tag (cedula type) and the province associated with the prefix if applies.
+
+        Raises
+        ------
+        InvalidFormat
+            If the cedula does not match the expected pattern.
+        """
+        
+        # Validate that the required format is met
         if not re.match(self.pattern, self.cedula):
             raise InvalidFormat()
         
-        # Como el formato es valido guardamos las distintas partes de la cedula
+        # Since the format is valid, we save the different parts of the cedula
         self.cedula_splitted = self.cedula.split("-")
         
         prefix = self.cedula_splitted[0]
         patterns = self.pattern_dict()
         
-        # Inicializamos los requerimientos de longitud por defecto
+        # Initialize the default length requirements
         self.prefix_required_len = 0
         self.book_required_len = 0
         self.volume_required_len = 0
         
-        # Verificamos cual es el tipo de patron correspondiente 
+        # Verify the type of pattern that corresponds
         for prefix_regex, tag in patterns.items():
             if re.match(prefix_regex, prefix):
                 if tag == 'Regular':
@@ -46,7 +58,7 @@ class CedulaChecker:
                     self.prefix_required_len = 2
                     self.book_required_len = 4
                     self.volume_required_len = 6
-                break  # Salir del bucle al encontrar una coincidencia
+                break  # Exit the loop upon finding a match
             
         provinces = self.province_dict()
         province = ''
@@ -63,7 +75,14 @@ class CedulaChecker:
         
         return tag, province
         
-    def format(self):
+    def format(self) -> tuple[str, str, str, str]:
+        """Formats the cedula to match the required format with leading zeros.
+        
+        Returns
+        -------
+        tuple[str, str, str, str]
+            The formatted cedula string and individual parts (prefix, book, volume).
+        """
         
         elements_required_len = [self.prefix_required_len, self.book_required_len, self.volume_required_len]
         
@@ -71,20 +90,25 @@ class CedulaChecker:
             part = self.cedula_splitted[i]
             required_len = elements_required_len[i]
             
-            if len(part) == required_len: # si ambas longitudes son iguales pasamos a la siguiente iteracion
+            if len(part) == required_len: # if both lengths are equal, move to the next iteration
                 continue
             
             self.cedula_splitted[i] = '0' * (required_len - len(part)) + part
         
-        formatted_cedula = ''
-        for part in self.cedula_splitted:
-            formatted_cedula = formatted_cedula + part
+        formatted_cedula = ''.join(self.cedula_splitted)
             
         formatted_cedula = formatted_cedula + '0' * (14 - len(formatted_cedula))
             
         return formatted_cedula, self.cedula_splitted[0], self.cedula_splitted[1], self.cedula_splitted[2]
         
-    def pattern_dict(self):
+    def pattern_dict(self) -> dict[str, str]:
+        """Provides a dictionary of regex patterns to identify cedula types.
+        
+        Returns
+        -------
+        dict[str, str]
+            Dictionary with regex patterns as keys and cedula type tags as values.
+        """
         regex_dict = {
             r'^(1[0-3]|[1-9])$': 'Regular',
             r'^PE$': 'Panameno_Extranjero',
@@ -95,7 +119,14 @@ class CedulaChecker:
         }
         return regex_dict
     
-    def province_dict(self):
+    def province_dict(self) -> dict[int, str]:
+        """Provides a dictionary of province codes and province names.
+        
+        Returns
+        -------
+        dict[int, str]
+            Dictionary with province codes as keys and province names as values.
+        """
         province_dict = {
             1: "Bocas del Toro",
             2: "Coclé",
