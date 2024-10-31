@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, Response, render_template, request, url_for
 from cedula import CedulaChecker
+from api import CedulaCheckerAPI
 from errors import InvalidFormat
+import json
 
 app = Flask(__name__)
 
@@ -46,6 +48,12 @@ def index():
         return render_template('index.html', resultado=resultado, alert='success')
     
     return render_template('index.html')
+
+@app.route('/api/cedula')
+def get_cedula_formatted():
+    result = CedulaCheckerAPI("3-747-2358").check()
+    response = Response(json.dumps(result), mimetype='application/json')
+    return response, 200
 
 if __name__ == '__main__':
     app.run(debug=True)
