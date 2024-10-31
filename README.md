@@ -14,15 +14,15 @@ This project is designed to validate and format Panamanian **cedula** numbers ac
 
 
 ```sh
-    git clone https://github.com/tu_usuario/tu_proyecto.git
-    cd tu_proyecto
+    git clone https://github.com/Johans1047/CedulaChecker.git
+    cd your_project
 ```
 
 2. Create a virtual environment (optional but recommended):
 
 ```sh
    python -m venv venv
-   cd tu_proyecto
+   cd your_project
 ```
 
 3. Activate the virtual environment:
