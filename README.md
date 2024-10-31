@@ -7,3 +7,38 @@ This project is designed to validate and format Panamanian **cedula** numbers ac
 - **Cedula Validation**: Validates cedula numbers according to predefined patterns for different types (e.g., Regular, Panamanian Resident, Indigenous).
 - **Cedula Formatting**: Adds leading zeros to parts of the cedula to ensure proper formatting.
 - **Province Identification**: Determines the province based on the cedula prefix.
+
+## Installation
+
+1. Clone the repository and navigate to the project directory:
+
+
+```sh
+    git clone https://github.com/tu_usuario/tu_proyecto.git
+    cd tu_proyecto
+```
+
+2. Create a virtual environment (optional but recommended):
+
+```sh
+   python -m venv venv
+   cd tu_proyecto
+```
+
+3. Activate the virtual environment:
+
+```sh
+   .\venv\Scripts\activate
+```
+
+4. Install the dependencies using requirements.txt:
+
+```sh
+   pip install -r requirements.txt
+```
+
+5. Run the project:
+
+```sh
+   python app.py
+```
