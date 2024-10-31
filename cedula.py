@@ -9,6 +9,7 @@ class CedulaChecker:
         self.prefix_required_len = None
         self.book_required_len = None
         self.volume_required_len = None
+        self.length = 14
 
     def validate(self) -> tuple[str, str]:
         """Validates the cedula format and returns its type and province.
@@ -97,7 +98,7 @@ class CedulaChecker:
         
         formatted_cedula = ''.join(self.cedula_splitted)
             
-        formatted_cedula = formatted_cedula + '0' * (14 - len(formatted_cedula))
+        formatted_cedula = formatted_cedula + '0' * (self.length - len(formatted_cedula))
             
         return formatted_cedula, self.cedula_splitted[0], self.cedula_splitted[1], self.cedula_splitted[2]
         
