@@ -4,7 +4,8 @@ from errors import InvalidFormat
 class CedulaChecker:
     def __init__(self, cedula):
         self.cedula = cedula
-        self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}-\d{1,6}$'
+        # self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}-\d{1,6}$'
+        self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}'
         self.cedula_splitted = None
         self.prefix_required_len = None
         self.book_required_len = None
@@ -26,14 +27,21 @@ class CedulaChecker:
         """
         
         # Validate that the required format is met
+        prefix = self.cedula.split("-")[0]
+        patterns = self.pattern_dict()
+        
+        for prefix_regex, tag in patterns.items():
+            if re.match(prefix_regex, prefix):
+                if tag[0] == 'Panameno_Extranjero':
+                    self.pattern = self.pattern + r'-\d{1,6}$'
+                else:
+                    self.pattern = self.pattern + r'-\d{1,5}$'
+                
         if not re.match(self.pattern, self.cedula):
             raise InvalidFormat()
         
         # Since the format is valid, we save the different parts of the cedula
         self.cedula_splitted = self.cedula.split("-")
-        
-        prefix = self.cedula_splitted[0]
-        patterns = self.pattern_dict()
         
         # Initialize the default length requirements
         self.prefix_required_len = 0
@@ -43,22 +51,9 @@ class CedulaChecker:
         # Verify the type of pattern that corresponds
         for prefix_regex, tag in patterns.items():
             if re.match(prefix_regex, prefix):
-                if tag == 'Regular':
-                    self.prefix_required_len = 2
-                    self.book_required_len = 4
-                    self.volume_required_len = 5
-                elif tag in ['Panameno_Vigencia', 'Indigena']:
-                    self.prefix_required_len = 4
-                    self.book_required_len = 4
-                    self.volume_required_len = 5
-                elif tag in ['Extranjero', 'Naturalizado']:
-                    self.prefix_required_len = 1
-                    self.book_required_len = 4
-                    self.volume_required_len = 5
-                elif tag == 'Panameno_Extranjero':
-                    self.prefix_required_len = 2
-                    self.book_required_len = 4
-                    self.volume_required_len = 6
+                self.prefix_required_len = tag[1][0]
+                self.book_required_len = tag[1][1]
+                self.volume_required_len = tag[1][2]
                 break  # Exit the loop upon finding a match
             
         provinces = self.province_dict()
@@ -74,7 +69,7 @@ class CedulaChecker:
                 province = prov
                 break
         
-        return tag, province
+        return tag[0], province
         
     def format(self) -> tuple[str, str, str, str]:
         """Formats the cedula to match the required format with leading zeros.
@@ -103,20 +98,22 @@ class CedulaChecker:
         return formatted_cedula, self.cedula_splitted[0], self.cedula_splitted[1], self.cedula_splitted[2]
         
     def pattern_dict(self) -> dict[str, str]:
-        """Provides a dictionary of regex patterns to identify cedula types.
+        """Provides a dictionary of regex patterns to identify cedula types and related lengths.
         
         Returns
         -------
-        dict[str, str]
-            Dictionary with regex patterns as keys and cedula type tags as values.
+        dict[str, list]
+            Dictionary where each key is a regex pattern as a string, and each value is a list containing:
+            - A cedula type tag as a string
+            - A list of integers representing associated lengths
         """
         regex_dict = {
-            r'^(1[0-3]|[1-9])$': 'Regular',
-            r'^PE$': 'Panameno_Extranjero',
-            r'^E$': 'Extranjero',
-            r'^N$': 'Naturalizado',
-            r'^(1[0-3]|[1-9])AV$': 'Panameno_Vigencia',
-            r'^(1[0-3]|[1-9])PI$': 'Indigena',
+            r'^(1[0-3]|[1-9])$': ['Regular', [2,4,5]],
+            r'^PE$': ['Panameno_Extranjero', [2,4,6]],
+            r'^E$': ['Extranjero', [1,4,5]],
+            r'^N$': ['Naturalizado', [1,4,5]],
+            r'^(1[0-3]|[1-9])AV$': ['Panameno_Vigencia', [4,4,5]],
+            r'^(1[0-3]|[1-9])PI$': ['Indigena', [4,4,5]],
         }
         return regex_dict
     
