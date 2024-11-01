@@ -4,7 +4,6 @@ from errors import InvalidFormat
 class CedulaChecker:
     def __init__(self, cedula):
         self.cedula = cedula
-        # self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}-\d{1,6}$'
         self.pattern = r'^(1[0-3]|[1-9]|PE|E|N|(1[0-3]|[1-9])AV|(1[0-3]|[1-9])PI)-\d{1,4}'
         self.cedula_splitted = None
         self.prefix_required_len = None
@@ -36,7 +35,6 @@ class CedulaChecker:
                     self.pattern = self.pattern + r'-\d{1,6}$'
                 else:
                     self.pattern = self.pattern + r'-\d{1,5}$'
-                
         if not re.match(self.pattern, self.cedula):
             raise InvalidFormat()
         
